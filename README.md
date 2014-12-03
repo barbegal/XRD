@@ -1,4 +1,4 @@
 xively-rickshaw
 ===============
 
-Some example time series graphs generated from Xively using Rickshaw
+Trying to visual live data, with relevant supporting stats, from Xively. Thanks to the example written by Jason Neylan.
