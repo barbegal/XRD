@@ -27,7 +27,7 @@
     <!-- HEADER -->
     <div id="header_wrap" class="outer">
         <header class="inner">
-          <h1 id="project_title">Xively to Rickshaw to D3 - Data Feed</h1>
+          <h1 id="project_title">Xively/Rickshaw - Data Feed</h1>
         </header>
     </div>
 
@@ -50,17 +50,19 @@
 // Set your API key first  
 xively.setKey("bOtKMjOehXFFWVQQBV3WbbLPYuvBDjZYnf2Umsfskl6BZVjo");  
 
-var startOfRecord = moment().subtract("day", 60).startOf('day');
-var endOfRecord = moment().subtract("day", 29).startOf('day');
+var startOfRecord = moment('2014-10-20');
+var endOfRecord = moment('2014-10-24');
 
 var query = { //to be used in data query
   start: startOfRecord.toJSON(), 
   end: endOfRecord.toJSON(), 
-  interval: 1000, 
-  limit: 10,
+  interval: 300, 
+  limit: 1000,
 };
 // Calls History from Xively (using Xively.js) feedID, datastreamID, options, callback
 xively.datastream.history( "1910056643", "TemperatureSensor", query, loadData);  
+
+//Now, to invoke like data points
 
 function loadData(data) {  
   var unit = data.unit.label;
@@ -68,7 +70,7 @@ function loadData(data) {
   var dp = data.datapoints;
   for (var i=0; i < dp.length; i++ ) {
     var date = moment(dp[i].at);
-    var value = parseInt(dp[i].value);
+    var value = parseFloat(dp[i].value);
     series[i] = {x: date.unix(), y: value};
   }
   drawGraph(series, unit);
@@ -77,14 +79,16 @@ function loadData(data) {
 function drawGraph(data, unit) {
   var graph = new Rickshaw.Graph( {
     element: document.querySelector("#chart"),
-    width: 640,
+    width: 600,
     height: 400,
     renderer: 'line',
-    series: [
+    max: 25,
+    min: 15,
+     series: [
       {
         data: data,
-        color: "#330000",
-        name: unit
+        color: '#990000', 
+        name: "Temp C"
       }
     ]
   } );
@@ -110,7 +114,7 @@ function drawGraph(data, unit) {
   axes.render();
   
   var yAxis = new Rickshaw.Graph.Axis.Y({
-      graph: graph
+    graph: graph
   });
 
   yAxis.render();
