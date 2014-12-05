@@ -6,6 +6,7 @@
     <meta name="description" content="Xively-rickshaw : Some example time series graphs generated from Xively using Rickshaw" />
 
     <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+	
     <link type="text/css" rel="stylesheet" href="css/graph.css">
     <link type="text/css" rel="stylesheet" href="css/detail.css">
     <link type="text/css" rel="stylesheet" href="css/legend.css">
@@ -16,7 +17,7 @@
 
     <script src="rickshaw.min.js"></script>
     <script src="vendor/moment.min.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.15/jquery-ui.min.js"></script>
     <script src="http://d23cj0cdvyoxg0.cloudfront.net/xivelyjs-1.0.3.min.js"></script>  
 
@@ -33,7 +34,7 @@
     <!-- MAIN CONTENT -->
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner" style="height: 500px">
-      <div id="chart_container" >
+		<div id="chart_container" >
           <div id="chart"></div>
           <div id="legend_container">
             <div id="smoother" title="Smoothing"></div>
@@ -41,43 +42,33 @@
           </div>
           <div id="slider"></div>
       </div>
-
       </section>
-    </div>
-
-    <!-- FOOTER  -->
-    <div id="footer_wrap" class="outer">
-      <footer class="inner">
-      </footer>
     </div>
 
 <script>
 
 // Set your API key first  
-xively.setKey( "bOtKMjOehXFFWVQQBV3WbbLPYuvBDjZYnf2Umsfskl6BZVjo" );  
+xively.setKey("bOtKMjOehXFFWVQQBV3WbbLPYuvBDjZYnf2Umsfskl6BZVjo");  
 
-var startOfYesterday = moment().subtract("day", 1).startOf('day');
-var endOfYesterday = moment().subtract("hour", 3).startOf('day');
+var startOfRecord = moment().subtract("day", 60).startOf('day');
+var endOfRecord = moment().subtract("day", 29).startOf('day');
 
-console.log(startOfYesterday);
-console.log(endOfYesterday);
-
-var query = { 
-  start: startOfYesterday.toJSON(), 
-  end: endOfYesterday.toJSON(), 
-  interval: 120, 
-  limit: 1000,
+var query = { //to be used in data query
+  start: startOfRecord.toJSON(), 
+  end: endOfRecord.toJSON(), 
+  interval: 1000, 
+  limit: 10,
 };
-
-xively.datastream.history( "1910056643", "Temperature", query, loadData);  
+// Calls History from Xively (using Xively.js) feedID, datastreamID, options, callback
+xively.datastream.history( "1910056643", "TemperatureSensor", query, loadData);  
 
 function loadData(data) {  
   var unit = data.unit.label;
   var series = [];
-  var filtedData = data.datapoints;
-  for (var i=0; i < filtedData.length; i++ ) {
-    var date = moment(filtedData[i].at);
-    var value = parseInt(filtedData[i].value);
+  var dp = data.datapoints;
+  for (var i=0; i < dp.length; i++ ) {
+    var date = moment(dp[i].at);
+    var value = parseInt(dp[i].value);
     series[i] = {x: date.unix(), y: value};
   }
   drawGraph(series, unit);
@@ -92,7 +83,7 @@ function drawGraph(data, unit) {
     series: [
       {
         data: data,
-        color: '#6060c0',
+        color: "#330000",
         name: unit
       }
     ]
@@ -113,7 +104,6 @@ function drawGraph(data, unit) {
     legend: legend
   } );
 
-
   var axes = new Rickshaw.Graph.Axis.Time( {
     graph: graph
   });
@@ -126,7 +116,4 @@ function drawGraph(data, unit) {
   yAxis.render();
 }
 </script>
-
-
-</body>
 </body>
